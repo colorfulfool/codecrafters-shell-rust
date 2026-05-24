@@ -15,7 +15,7 @@ fn main() {
 
         match command {
             "exit" => break,
-            "echo" => println!("{} {}", command, args),
+            "echo" => println!("{}", args),
             cmd => println!("{}: command not found", cmd),
         }
     }
