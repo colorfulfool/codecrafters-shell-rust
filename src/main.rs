@@ -10,8 +10,8 @@ fn main() {
 
         let mut parts = statement.splitn(2, " ");
 
-        let command = parts.next().unwrap_or("");
-        let args = parts.next().unwrap_or("");
+        let command = parts.next().unwrap_or("").trim();
+        let args = parts.next().unwrap_or("").trim();
 
         match command {
             "exit" => break,
