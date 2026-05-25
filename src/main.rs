@@ -52,9 +52,9 @@ fn main() {
             "echo" => println!("{}", args),
             "type" => print_type(args),
             cmd => match find_executable(cmd) {
-                Ok(_filename) => match Command::new(format!("{} {}", cmd, args)).output() {
+                Ok(_executable) => match Command::new(format!("{} {}", cmd, args)).output() {
                     Ok(output) => println!("Output: {}", String::from_utf8_lossy(&output.stdout)),
-                    Err(e) => println!("Failed to execute: {}", e),
+                    Err(e) => eprintln!("Failed to execute {}: {}", cmd, e),
                 },
                 Err(error) => println!("{}", error),
             },
