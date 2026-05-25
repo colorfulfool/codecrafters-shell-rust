@@ -20,7 +20,7 @@ fn find_executable(command: &str) -> Result<PathBuf, io::Error> {
         let filename = directory.join(command);
         match filename.metadata() {
             Ok(meta) => {
-                if meta.is_file() && meta.mode() & 0o100 != 0 {
+                if meta.is_file() && meta.mode() & 0b001000000 != 0 {
                     return Ok(filename);
                 }
             }
