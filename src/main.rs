@@ -1,6 +1,7 @@
 use std::env;
 use std::io::Write;
 use std::io::{self, ErrorKind};
+use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -17,8 +18,13 @@ fn print_type(command: &str) {
 fn find_executable(command: &str) -> Result<PathBuf, io::Error> {
     for directory in env::split_paths(&env::var("PATH").unwrap_or_default()) {
         let filename = directory.join(command);
-        if filename.is_file() {
-            return Ok(filename);
+        match filename.metadata() {
+            Ok(meta) => {
+                if meta.is_file() && meta.mode() & 0o100 != 0 {
+                    return Ok(filename);
+                }
+            }
+            Err(e) => eprintln!("{}", e),
         }
     }
 
