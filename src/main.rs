@@ -1,10 +1,28 @@
-use std::io::{self, Write};
+use std::env;
+use std::io::Write;
+use std::io::{self, ErrorKind};
+use std::path::PathBuf;
+use std::process::Command;
 
 fn print_type(command: &str) {
     match command {
         "exit" | "echo" | "type" => println!("{} is a shell builtin", command),
         _ => println!("{}: not found", command),
     }
+}
+
+fn find_executable(command: &str) -> Result<PathBuf, io::Error> {
+    for directory in env::split_paths(&env::var("PATH").unwrap_or_default()) {
+        let filename = directory.join(command);
+        if filename.is_file() {
+            return Ok(filename);
+        }
+    }
+
+    return Err(io::Error::new(
+        ErrorKind::NotFound,
+        format!("{}: not found", command),
+    ));
 }
 
 fn main() {
@@ -24,7 +42,13 @@ fn main() {
             "exit" => break,
             "echo" => println!("{}", args),
             "type" => print_type(args),
-            cmd => println!("{}: command not found", cmd),
+            cmd => match find_executable(cmd) {
+                Ok(_filename) => match Command::new(format!("{} {}", cmd, args)).output() {
+                    Ok(output) => println!("Output: {}", String::from_utf8_lossy(&output.stdout)),
+                    Err(e) => println!("Failed to execute: {}", e),
+                },
+                Err(error) => println!("{}", error),
+            },
         }
     }
 }
