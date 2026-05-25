@@ -3,7 +3,7 @@ use std::io::Write;
 use std::io::{self, ErrorKind};
 use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
-use std::process::{Command, Output};
+use std::process::Command;
 
 fn print_type(command: &str) {
     match command {
