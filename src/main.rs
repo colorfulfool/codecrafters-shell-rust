@@ -3,7 +3,7 @@ use std::io::Write;
 use std::io::{self, ErrorKind};
 use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Output};
 
 fn print_type(command: &str) {
     match command {
@@ -34,6 +34,10 @@ fn find_executable(command: &str) -> Result<PathBuf, io::Error> {
     ));
 }
 
+fn run_program(cmd: &str, args: &str) -> Result<Output, std::io::Error> {
+    return Command::new(cmd).args(args.split(" ")).output();
+}
+
 fn main() {
     loop {
         print!("$ ");
@@ -52,8 +56,8 @@ fn main() {
             "echo" => println!("{}", args),
             "type" => print_type(args),
             cmd => match find_executable(cmd) {
-                Ok(_executable) => match Command::new(format!("{} {}", cmd, args)).output() {
-                    Ok(output) => println!("Output: {}", String::from_utf8_lossy(&output.stdout)),
+                Ok(_executable) => match run_program(cmd, args) {
+                    Ok(output) => print!("{}", String::from_utf8_lossy(&output.stdout)),
                     Err(e) => eprintln!("Failed to execute {}: {}", cmd, e),
                 },
                 Err(error) => println!("{}", error),
