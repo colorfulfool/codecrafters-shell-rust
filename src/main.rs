@@ -7,7 +7,10 @@ use std::process::Command;
 fn print_type(command: &str) {
     match command {
         "exit" | "echo" | "type" => println!("{} is a shell builtin", command),
-        _ => println!("{}: not found", command),
+        _ => match find_executable(command) {
+            Ok(executable) => println!("{} is {}", command, executable.to_string_lossy()),
+            Err(_error) => println!("{}: not found", command),
+        },
     }
 }
 
