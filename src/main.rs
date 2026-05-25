@@ -24,7 +24,7 @@ fn find_executable(command: &str) -> Result<PathBuf, io::Error> {
                     return Ok(filename);
                 }
             }
-            Err(e) => eprintln!("Can't read metadata: {}", e),
+            Err(_e) => (),
         }
     }
 
